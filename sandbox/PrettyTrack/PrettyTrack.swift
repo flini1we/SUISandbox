@@ -1,64 +1,7 @@
 import SwiftUI
 
 struct ContentView: View {
-    private let habbits: [Habbit] = [
-        .init(
-            color: .blue,
-            titlle: "Drink water",
-            systemImage: "drop.fill",
-            currentCompleted: 0,
-            completionAim: 3
-        ),
-        .init(
-            color: .green,
-            titlle: "Walk",
-            systemImage: "figure.walk",
-            currentCompleted: 1,
-            completionAim: 5
-        ),
-        .init(
-            color: .orange,
-            titlle: "Read book",
-            systemImage: "book.fill",
-            currentCompleted: 2,
-            completionAim: 7
-        ),
-        .init(
-            color: .purple,
-            titlle: "Meditate",
-            systemImage: "brain.head.profile",
-            currentCompleted: 0,
-            completionAim: 1
-        ),
-        .init(
-            color: .pink,
-            titlle: "Workout",
-            systemImage: "bolt.heart.fill",
-            currentCompleted: 3,
-            completionAim: 4
-        ),
-        .init(
-            color: .red,
-            titlle: "No sugar",
-            systemImage: "heart.slash.fill",
-            currentCompleted: 5,
-            completionAim: 7
-        ),
-        .init(
-            color: .teal,
-            titlle: "Journal",
-            systemImage: "pencil.and.outline",
-            currentCompleted: 1,
-            completionAim: 3
-        ),
-        .init(
-            color: .indigo,
-            titlle: "Sleep early",
-            systemImage: "bed.double.fill",
-            currentCompleted: 2,
-            completionAim: 5
-        )
-    ]
+    private let habbits: [Habbit] = Habbit.mock()
     private let habbitHeight = UIScreen.main.bounds.height / 3.5
     
     var body: some View {
@@ -91,7 +34,7 @@ struct ContentView: View {
         
         var body: some View {
             ZStack(alignment: .bottom) {
-                RoundedRectangle(cornerRadius: 25)
+                RoundedRectangle(cornerRadius: .itemCornerRadius)
                     .fill(.ultraThinMaterial)
                 
                 LinearGradient(
@@ -99,7 +42,7 @@ struct ContentView: View {
                 )
                 .opacity(habbit.currentCompleted >= habbit.completionAim ? 0.25 : 0)
                 .clipShape(
-                    RoundedRectangle(cornerRadius: 25)
+                    RoundedRectangle(cornerRadius: .itemCornerRadius)
                 )
                 
                 VStack {
@@ -174,6 +117,7 @@ struct ContentView: View {
         var width: CGFloat
         
         private let brightnesConstant = -0.07
+        private let maxLevels = 4
         
         var body: some View {
             ZStack(alignment: .bottom) {
@@ -185,33 +129,18 @@ struct ContentView: View {
                 RoundedRectangle(cornerRadius: width / 2)
                     .fill(color)
                     .frame(width: width, height: 3 * width * CGFloat(min(currentCompleted, completionAim)) / CGFloat(completionAim))
-                
-                RoundedRectangle(cornerRadius: width / 2)
-                    .fill(color)
-                    .brightness(brightnesConstant)
-                    .frame(
-                        width: width,
-                        height: width * 3 / 2 + 3 * width * CGFloat(min(currentCompleted - completionAim, completionAim)) / CGFloat(completionAim) / 2
-                    )
-                    .opacity(currentCompleted + 1 > completionAim ? 1 : 0)
-                
-                RoundedRectangle(cornerRadius: width / 2)
-                    .fill(color)
-                    .brightness(brightnesConstant * 2)
-                    .frame(
-                        width: width,
-                        height: width * 3 / 2 + 3 * width * CGFloat(min(currentCompleted - 2 * completionAim, completionAim)) / CGFloat(completionAim) / 2
-                    )
-                    .opacity(currentCompleted + 1 > 2 * completionAim ? 1 : 0)
-                
-                RoundedRectangle(cornerRadius: width / 2)
-                    .fill(color)
-                    .brightness(brightnesConstant * 3)
-                    .frame(
-                        width: width,
-                        height: width * 3 / 2 + 3 * width * CGFloat(min(currentCompleted - 3 * completionAim, completionAim)) / CGFloat(completionAim) / 2
-                    )
-                    .opacity(currentCompleted + 1 > 3 * completionAim ? 1 : 0)
+                        
+            
+                ForEach(1..<maxLevels, id: \.self) { level in
+                    RoundedRectangle(cornerRadius: width / 2)
+                        .fill(color)
+                        .brightness(brightnesConstant * Double(level))
+                        .frame(
+                            width: width,
+                            height: width * 3 / 2 + 3 * width * CGFloat(min(max(currentCompleted - level * completionAim, 0), completionAim)) / CGFloat(completionAim) / 2
+                        )
+                        .opacity(currentCompleted + 1 > level * completionAim ? 1 : 0)
+                }
             }
         }
     }
@@ -231,4 +160,71 @@ struct Habbit: Hashable {
     mutating func complete() {
         self.currentCompleted += 1
     }
+}
+
+private extension Habbit {
+    static func mock() -> [Self] {
+        [
+            .init(
+                color: .blue,
+                titlle: "Drink water",
+                systemImage: "drop.fill",
+                currentCompleted: 0,
+                completionAim: 3
+            ),
+            .init(
+                color: .green,
+                titlle: "Walk",
+                systemImage: "figure.walk",
+                currentCompleted: 1,
+                completionAim: 5
+            ),
+            .init(
+                color: .orange,
+                titlle: "Read book",
+                systemImage: "book.fill",
+                currentCompleted: 2,
+                completionAim: 7
+            ),
+            .init(
+                color: .purple,
+                titlle: "Meditate",
+                systemImage: "brain.head.profile",
+                currentCompleted: 0,
+                completionAim: 1
+            ),
+            .init(
+                color: .pink,
+                titlle: "Workout",
+                systemImage: "bolt.heart.fill",
+                currentCompleted: 3,
+                completionAim: 4
+            ),
+            .init(
+                color: .red,
+                titlle: "No sugar",
+                systemImage: "heart.slash.fill",
+                currentCompleted: 5,
+                completionAim: 7
+            ),
+            .init(
+                color: .teal,
+                titlle: "Journal",
+                systemImage: "pencil.and.outline",
+                currentCompleted: 1,
+                completionAim: 3
+            ),
+            .init(
+                color: .indigo,
+                titlle: "Sleep early",
+                systemImage: "bed.double.fill",
+                currentCompleted: 2,
+                completionAim: 5
+            )
+        ]
+    }
+}
+
+private extension CGFloat {
+    static let itemCornerRadius: CGFloat = 25
 }
