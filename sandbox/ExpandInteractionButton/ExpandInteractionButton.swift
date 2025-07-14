@@ -5,44 +5,91 @@ struct Content: View {
     @State private var showExpandedContent = false
     
     var body: some View {
-        NavigationStack {
-            List {
-                
+        ZStack(alignment: .bottomTrailing) {
+            NavigationStack {
+                List {
+                    
+                }
+                .navigationTitle("Expand button")
             }
-            .navigationTitle("Expand button sample")
+            
+            ExpandInteractionButton()
         }
-        .overlay(alignment: .bottomTrailing) {
-            ExpandInteractionButton(
-                bgColor: .black,
-                showExpandedContent: $showExpandedContent) {
+    }
+}
+
+struct ExpandInteractionButton: View {
+    
+    @State private var isCollapsed = true
+    @State private var isBulletVisible = false
+    
+    var body: some View {
+        ZStack(alignment: .bottomTrailing) {
+            Rectangle()
+                .fill(.black.opacity(isCollapsed ? 0 : 0.005))
+                .frame(width: .infinity, height: .infinity)
+                .onTapGesture {
+                    if !isCollapsed {
+                        isCollapsed.toggle()
+                    }
+                }
+                .ignoresSafeArea()
+            
+            RoundedRectangle(
+                cornerRadius: 25,
+                style: .continuous
+            )
+            .frame(width: isCollapsed ? 50 : .infinity,
+                   height: isCollapsed ? 50 : 240)
+            .padding(.horizontal)
+            .overlay(alignment: isCollapsed ? .center : .bottom) {
+                if isCollapsed {
                     Image(systemName: "plus")
-                        .font(.title3)
-                        .fontWeight(.semibold)
                         .foregroundStyle(.background)
-                        .frame(width: 45, height: 45)
-                } content: {
+                        .font(.title2)
+                } else {
                     VStack(alignment: .leading) {
                         RowView("paperplane", "Send")
                         RowView("arrow.trianglehead.2.counterclockwise", "Swap")
                         RowView("arrow.down", "Receive")
                     }
-                    .padding()
-                } expandedContent: {
-                    
+                    .transition(.identity)
+                    .opacity(isBulletVisible ? 1 : 0)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.horizontal, 20)
+                    .onAppear {
+                        withAnimation(.easeIn.delay(0.25)) {
+                            isBulletVisible = true
+                        }
+                    }
+                    .onDisappear {
+                        var transaction = Transaction()
+                        transaction.disablesAnimations = true
+                        withTransaction(transaction) {
+                            isBulletVisible = false
+                        }
+                        /// withAnimation(nil) is also useful
+                    }
                 }
-                .padding()
+            }
+            .onTapGesture {
+                if isCollapsed {
+                    isCollapsed.toggle()
+                }
+            }
+            .animation(.smooth, value: isCollapsed)
         }
     }
     
     @ViewBuilder
     func RowView(_ image: String, _ title: String) -> some View {
-        HStack {
+        HStack(spacing: 10) {
             Image(systemName: image)
                 .font(.title2)
                 .frame(width: 45, height: 45)
                 .background(.background, in: .circle)
             
-            VStack(alignment: .leading) {
+            VStack(alignment: .leading, spacing: 10) {
                 Text(title)
                     .font(.title3)
                     .foregroundStyle(.background)
@@ -57,94 +104,6 @@ struct Content: View {
         }
         .padding(10)
         .contentShape(.rect)
-    }
-}
-
-struct ExpandInteractionButton<Label: View,
-                               Content: View,
-                               ExpandedContent: View>: View {
-    var bgColor: Color
-    @Binding var showExpandedContent: Bool
-    
-    @ViewBuilder var label: Label
-    @ViewBuilder var content: Content
-    @ViewBuilder var expandedContent: ExpandedContent
-    
-    @State private var showFullScreenCover = false
-    @State private var animateContent = false
-    @State private var viewPosition: CGRect = .zero
-    var body: some View {
-        label
-            .background(bgColor)
-            .clipShape(.circle)
-            .contentShape(.circle)
-            .onGeometryChange(for: CGRect.self, of: {
-                $0.frame(in: .global)
-            }, action: { newValue in
-                viewPosition = newValue
-            })
-            .opacity(showFullScreenCover ? 0 : 1)
-            .onTapGesture {
-                toggleFullScreenCover(false, status: true)
-            }
-            .fullScreenCover(isPresented: $showFullScreenCover) {
-                ZStack(alignment: .topLeading) {
-                    if animateContent {
-                        content
-                            .transition(.blurReplace)
-                    } else {
-                        label
-                            .transition(.blurReplace)
-                    }
-                }
-                .geometryGroup()
-                .clipShape(.rect(cornerRadius: 30, style: .continuous))
-                .background {
-                    RoundedRectangle(cornerRadius: 30, style: .continuous)
-                        .fill(bgColor)
-                }
-                .frame(
-                    maxWidth: .infinity,
-                    maxHeight: .infinity,
-                    alignment: animateContent ? .bottom : .topLeading
-                )
-                .padding(.horizontal, animateContent ? 15 : 0)
-                .padding(.vertical, animateContent ? 5 : 0)
-                .offset(
-                    x: animateContent ? 0 : viewPosition.minX,
-                    y: animateContent ? 0 : viewPosition.minY
-                )
-                .ignoresSafeArea(animateContent ? [] : .all)
-                .background {
-                    Rectangle()
-                        .fill(.black.opacity(animateContent ? 0.05 : 0))
-                        .ignoresSafeArea()
-                        .onTapGesture {
-                            withAnimation {
-                                animateContent = false
-                            } completion: {
-                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                                    toggleFullScreenCover(false, status: false)
-                                }
-                            }
-                        }
-                }
-                .task {
-                    try? await Task.sleep(for: .seconds(0.05))
-                    withAnimation {
-                        animateContent = true
-                    }
-                }
-            }
-    }
-    
-    private func toggleFullScreenCover(_ withAnimation: Bool, status: Bool) {
-        var transaction = Transaction()
-        transaction.disablesAnimations = !withAnimation
-        
-        withTransaction(transaction) {
-            showFullScreenCover = status
-        }
     }
 }
 
