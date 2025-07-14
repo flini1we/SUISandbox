@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct ContentView: View {
+struct PrettyTrack: View {
     private let habbits: [Habbit] = Habbit.mock()
     private let habbitHeight = UIScreen.main.bounds.height / 3.5
     
@@ -147,7 +147,7 @@ struct ContentView: View {
 }
 
 #Preview {
-    ContentView()
+    PrettyTrack()
 }
 
 struct Habbit: Hashable {

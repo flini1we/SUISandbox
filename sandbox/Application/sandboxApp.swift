@@ -4,7 +4,7 @@ import SwiftUI
 struct sandboxApp: App {
     var body: some Scene {
         WindowGroup {
-            CardView()
+            ExpandedInteractionButtonContent()
         }
     }
 }

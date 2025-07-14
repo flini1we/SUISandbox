@@ -79,12 +79,12 @@ struct CardView: View {
                 
                 VStack(alignment: .leading, spacing: 10) {
                     HStack(alignment: .center) {
-                        Text("Welcome, Daniel")
+                        Text("Swift Testing")
                             .font(Font.system(.title).smallCaps())
                             .bold()
                     }
                     
-                    Text("A member of your household has perhaps been withholding some negative emotions for a long time. He or she may finally let loose with everything today. This could prove disconcerting, Capricorn, as you probably had no idea this was going on. Some honest talk is definitely in order. Try to show that you understand. All should be fine in the end.")
+                    Text("Swift Testing has a clear and expressive API built using macros, so you can declare complex behaviors with a small amount of code. The #expect API uses Swift expressions and operators, and captures the evaluated values so you can quickly understand what went wrong when a test fails. Parameterized tests help you run the same test over a sequence of values so you can write less code. And all tests integrate seamlessly with Swift Concurrency and run in parallel by default.")
                         .font(.callout.smallCaps())
                         .monospaced()
                     

@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct Content: View {
+struct ExpandedInteractionButtonContent: View {
     
     @State private var showExpandedContent = false
     
@@ -27,7 +27,10 @@ struct ExpandInteractionButton: View {
         ZStack(alignment: .bottomTrailing) {
             Rectangle()
                 .fill(.black.opacity(isCollapsed ? 0 : 0.005))
-                .frame(width: .infinity, height: .infinity)
+                .frame(
+                    maxWidth: .infinity,
+                    maxHeight: .infinity
+                )
                 .onTapGesture {
                     if !isCollapsed {
                         isCollapsed.toggle()
@@ -39,8 +42,8 @@ struct ExpandInteractionButton: View {
                 cornerRadius: 25,
                 style: .continuous
             )
-            .frame(width: isCollapsed ? 50 : .infinity,
-                   height: isCollapsed ? 50 : 240)
+            .frame(height: isCollapsed ? 50 : 240)
+            .frame(maxWidth: isCollapsed ? 50 : .infinity,)
             .padding(.horizontal)
             .overlay(alignment: isCollapsed ? .center : .bottom) {
                 if isCollapsed {
@@ -109,6 +112,6 @@ struct ExpandInteractionButton: View {
 
 
 #Preview {
-    Content()
+    ExpandedInteractionButtonContent()
 }
 
