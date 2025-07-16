@@ -62,6 +62,7 @@ struct AnimatedBackgroundView: View {
 }
 
 struct CardView: View {
+    
     var body: some View {
         VStack {
             ZStack(alignment: .topLeading) {
@@ -75,7 +76,7 @@ struct CardView: View {
                         RoundedRectangle(cornerRadius: 32, style: .continuous)
                             .stroke(Color.white.opacity(0.3), lineWidth: 2)
                     )
-                
+
                 VStack(alignment: .leading, spacing: 10) {
                     HStack(alignment: .center) {
                         Text("Swift Testing")
