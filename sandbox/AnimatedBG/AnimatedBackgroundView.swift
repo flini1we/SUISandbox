@@ -61,6 +61,7 @@ struct AnimatedBackgroundView: View {
     }
 }
 
+
 struct CardView: View {
     
     var body: some View {
